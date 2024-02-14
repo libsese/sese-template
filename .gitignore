@@ -1,0 +1,14 @@
+build
+build-*
+out
+output
+cmake-*
+
+.vs
+.vscode
+.idea
+.cache
+
+CMakeSettings.json
+CMakePresets.json
+CMakeUserPresets.json
