@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
 # include sese tools
 include(cmake/SeseTools.cmake)
+# auto detect triplet
+sese_auto_detect_triplet()
 # auto find vcpkg chain file
 sese_auto_find_vcpkg()
 

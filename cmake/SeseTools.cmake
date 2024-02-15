@@ -13,6 +13,17 @@ macro(sese_auto_enable_feature opt_name feature_name)
     endif ()
 endmacro()
 
+macro (SESE_PROXY ADDR)
+    set($ENV{http_proxy} ${ADDR})
+    set($ENV{https_proxy} ${ADDR})
+    set($ENV{all_proxy} ${ADDR})
+endmacro ()
+
+macro (SESE_CLEAN_PROXY)
+    set($ENV{http_proxy} "")
+    set($ENV{https_proxy} "")
+    set($ENV{all_proxy} "")
+endmacro ()
 
 macro(SESE_AUTO_EXPORT_SYMBOLS TARGET_NAME)
     get_target_property(${TARGET_NAME}_TYPE ${TARGET_NAME} TYPE)
@@ -42,6 +53,9 @@ endmacro()
 
 macro(SESE_ENABLE_ASAN TARGET_NAME)
     target_compile_options(${TARGET_NAME} PRIVATE "-fsanitize=address")
+    if (UNIX)
+        target_link_options(${TARGET_NAME} PRIVATE "-fsanitize=address")
+    endif ()
 endmacro()
 
 macro(SESE_TARGET_INCLUDE TARGET_NAME INCLUDE_DIR)
@@ -55,7 +69,6 @@ endmacro()
 
 macro(SESE_ADD_EXECUTABLE TARGET_NAME)
     add_executable(${TARGET_NAME})
-    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
     set_target_properties(${TARGET_NAME} PROPERTIES
             CXX_STANDARD 17
     )
@@ -65,11 +78,11 @@ macro(SESE_ADD_EXECUTABLE TARGET_NAME)
     if (${UNIX})
         target_compile_options(${TARGET_NAME} PRIVATE -fPIC -gdwarf-4)
     endif ()
+    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
 endmacro()
 
 macro(SESE_ADD_LIBRARY TARGET_NAME)
     add_library(${TARGET_NAME})
-    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
     set_target_properties(${TARGET_NAME} PROPERTIES
             CXX_STANDARD 17
     )
@@ -78,6 +91,19 @@ macro(SESE_ADD_LIBRARY TARGET_NAME)
     endif ()
     if (${UNIX})
         target_compile_options(${TARGET_NAME} PRIVATE -fPIC -gdwarf-4)
+    endif ()
+    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
+endmacro()
+
+macro(SESE_AUTO_DETECT_TRIPLET)
+    if (WIN32)
+        set (VCPKG_TARGET_TRIPLET x64-windows)
+    elseif (UNIX AND NOT APPLE)
+        set (VCPKG_TARGET_TRIPLET x64-linux-dynamic)
+    elseif (APPLE)
+        set (VCPKG_TARGET_TRIPLET x64-osx-dynamic)
+    else ()
+        message (FATAL_ERROR "Unknown systems")
     endif ()
 endmacro()
 
@@ -105,6 +131,7 @@ macro(SESE_AUTO_FIND_VCPKG)
                         C:/Users/$ENV{USER}/vcpkg/scripts/buildsystems
                         C:/Users/$ENV{USER}/.vcpkg/scripts/buildsystems
                         /usr/local/vcpkg/scripts/buildsystems
+                        /usr/local/share/vcpkg/scripts/buildsystems
                         /src/vcpkg/scripts/buildsystems
                         /home/$ENV{USER}/vcpkg/scripts/buildsystems
                         /home/$ENV{USER}/.vcpkg/scripts/buildsystems
@@ -112,7 +139,7 @@ macro(SESE_AUTO_FIND_VCPKG)
                         /Users/$ENV{USER}/.vcpkg/scripts/buildsystems
                 )
 
-                if (${VCPKG_TOOLCHAIN_DIR} STREQUAL "")
+                if (${VCPKG_TOOLCHAIN_DIR} STREQUAL "VCPKG_TOOLCHAIN_DIR-NOTFOUND")
                     message(FATAL_ERROR "Could not found the vcpkg.cmake")
                 else ()
                     message(STATUS "VCPKG_TOOLCHAIN_FILE :${VCPKG_TOOLCHAIN_DIR}/vcpkg.cmake")
@@ -143,7 +170,6 @@ macro(SESE_PACKAGE_CONFIG CONFIG_FILE TARGET_FILE_NAME)
 endmacro()
 
 macro(SESE_EXPORT_TARGETS NAMESPACE)
-    message(STATUS ${ARGN})
     install(
             TARGETS ${ARGN}
             EXPORT ${TARGET_FILE_NAME}
