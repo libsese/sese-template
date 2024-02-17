@@ -53,7 +53,7 @@ endmacro()
 
 macro(SESE_ENABLE_ASAN TARGET_NAME)
     target_compile_options(${TARGET_NAME} PRIVATE "-fsanitize=address")
-    if (UNIX)
+if (UNIX)
         target_link_options(${TARGET_NAME} PRIVATE "-fsanitize=address")
     endif ()
 endmacro()
@@ -69,6 +69,7 @@ endmacro()
 
 macro(SESE_ADD_EXECUTABLE TARGET_NAME)
     add_executable(${TARGET_NAME})
+    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
     set_target_properties(${TARGET_NAME} PROPERTIES
             CXX_STANDARD 17
     )
@@ -78,11 +79,11 @@ macro(SESE_ADD_EXECUTABLE TARGET_NAME)
     if (${UNIX})
         target_compile_options(${TARGET_NAME} PRIVATE -fPIC -gdwarf-4)
     endif ()
-    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
 endmacro()
 
 macro(SESE_ADD_LIBRARY TARGET_NAME)
     add_library(${TARGET_NAME})
+    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
     set_target_properties(${TARGET_NAME} PROPERTIES
             CXX_STANDARD 17
     )
@@ -92,7 +93,6 @@ macro(SESE_ADD_LIBRARY TARGET_NAME)
     if (${UNIX})
         target_compile_options(${TARGET_NAME} PRIVATE -fPIC -gdwarf-4)
     endif ()
-    target_link_libraries(${TARGET_NAME} PRIVATE Sese::Core)
 endmacro()
 
 macro(SESE_AUTO_DETECT_TRIPLET)
@@ -178,7 +178,13 @@ macro(SESE_EXPORT_TARGETS NAMESPACE)
             ARCHIVE DESTINATION lib
             PUBLIC_HEADER DESTINATION include
     )
-
+    install(
+        DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+    )
     install(
             EXPORT ${TARGET_FILE_NAME}
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
