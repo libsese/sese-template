@@ -8,7 +8,7 @@
         {
             "kind": "git",
             "repository": "https://github.com/libsese/vcpkg-registry.git",
-            "baseline": "329fc34214787aff243149fb18af79c353db73b9",
+            "baseline": "0a72c36db29b1d5bbbc74d9722e3d0c569a48b09",
             "packages": [
                 "sese-core"
             ]
