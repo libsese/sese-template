@@ -4,9 +4,8 @@
     "license": "Apache-2.0",
     "dependencies": [
         {
-            "name": "sese-core",
-            "version>=": "2.0.1"
-
+            "name": "sese",
+            "version>=": "2.1.0"
         }
     ]
 }
