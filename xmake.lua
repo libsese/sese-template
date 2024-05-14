@@ -4,14 +4,14 @@ local registries = {
     {
         kind = "git",
         repository = "https://github.com/libsese/vcpkg-registry",
-        baseline = "43ed8eab2f54413ebd406ca2f9fcf17240995335",
+        baseline = "02e2b8ca0ad517ed4df220c6a030a3541794f0e1",
         packages = {
             "sese"
         }
     }
 }
 
-add_requires("vcpkg::sese >=2.1.0", {configs = { shared = true, baseline = "c8696863d371ab7f46e213d8f5ca923c4aef2a00",registries = registries}})
+add_requires("vcpkg::sese >=2.1.1", {configs = { shared = true, baseline = "c8696863d371ab7f46e213d8f5ca923c4aef2a00",registries = registries}})
 
 set_languages("c++17")
 
