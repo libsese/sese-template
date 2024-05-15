@@ -4,7 +4,7 @@ local registries = {
     {
         kind = "git",
         repository = "https://github.com/libsese/vcpkg-registry",
-        baseline = "02e2b8ca0ad517ed4df220c6a030a3541794f0e1",
+        baseline = "73268778d5f796f188ca66f71536377b171ee37e",
         packages = {
             "sese"
         }
