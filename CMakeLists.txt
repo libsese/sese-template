@@ -2,12 +2,19 @@ cmake_minimum_required(VERSION 3.13)
 # include sese tools
 include(cmake/SeseTools.cmake)
 # auto detect triplet
-sese_auto_detect_triplet()
+# sese_auto_detect_triplet()
 # auto find vcpkg chain file
 sese_auto_find_vcpkg()
 
 # project
 project(sese-template VERSION 0.0.1)
+
+if (MSVC AND VCPKG_TARGET_TRIPLET STREQUAL "x64-windows-static")
+    set(CMAKE_CXX_FLAGS_DEBUG /MTd)
+    set(CMAKE_CXX_FLAGS_MINSIZEREL /MT)
+    set(CMAKE_CXX_FLAGS_RELEASE /MT)
+    set(CMAKE_CXX_FLAGS_RELWITHDEBUGINFO /MT)
+endif ()
 
 # find_package
 find_package(sese CONFIG REQUIRED)
